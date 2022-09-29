@@ -57,7 +57,7 @@ function fetchAndBuildAllSections() {
 
             if (Array.isArray(category) && category.length) {
                 category.forEach(category =>
-                    fetchAndBuildMovieSection(apiPaths.fetchMovieList(category.id), category.name))
+                    fetchAndBuildMovieSection(apiPaths.fetchMovieList(category.id), category.name,category))
             }
         }).catch(err => console.log(err))
 
@@ -65,7 +65,7 @@ function fetchAndBuildAllSections() {
 
 }
 
-function fetchAndBuildMovieSection(fetchUrl, categoryName) {
+function fetchAndBuildMovieSection(fetchUrl, categoryName,category) {
     // console.log(fetchUrl,category);
 
     return fetch(fetchUrl)
@@ -76,7 +76,7 @@ function fetchAndBuildMovieSection(fetchUrl, categoryName) {
             const movies = res.results
 
             if (Array.isArray(movies) && movies.length) {
-                buildMoviesSection(movies, categoryName)
+                buildMoviesSection(movies, categoryName,category)
             }
             // console.log(movies);
             // console.log(category.name);
@@ -85,20 +85,37 @@ function fetchAndBuildMovieSection(fetchUrl, categoryName) {
         .catch(err => console.log(err))
 }
 
-function buildMoviesSection(list, categoryName) {
+function buildMoviesSection(list, categoryName,category) {
     // console.log(list);
+    // console.log(category);
     const moviesCont = document.getElementById('movies-cont')
 
     const moviesListHTML = list.map((item) => {
+        // console.log(item.genre_ids);
+        const random=Math.floor(Math.random() * (13 - 18 + 1) + 16)
+        const random1=Math.floor(Math.random() * (90 - 100 + 1) + 88)
+
         return `
-    
-        <img class="movie-item movie-item-img" src="${imgPath}${item.backdrop_path}" alt="${item.title}" onclick="searchMovieTrailer('${item.title}')">
-   
+        <div class="movie-item-box">
+          <img class="movie-item movie-item-img" src="${imgPath}${item.backdrop_path}" alt="${item.title}" onclick="searchMovieTrailer('${item.title}')">
+          <div class="movie-item-details">
+            <div class="button-cont">
+              <img src="./images/play.png" alt="" class="button-cont-img">
+              <img src="./images/tick.png" alt="" class="button-cont-img">
+              <img src="./images/like.png" alt="" class="button-cont-img">
+            </div>
+            <span class="ratings">${random1}% Match</span>
+            <span>| Movie type</span>
+            <div class="genre-cont">
+              <div>${categoryName}</div>
+              <div>${random}+</div>
+            </div>
+         </div>
+        </div>
         
         `
         
     }).join('')
-
     // console.log(moviesListHTML);
 
     const moviesSectionHTML = `
@@ -126,7 +143,7 @@ function searchMovieTrailer(movieName) {
         .then(res => {
             const bestResult=res.items[0];
             const youtubeUrl=`https://www.youtube.com/watch?v=${bestResult.id.videoId}`
-            console.log(res);
+            // console.log(res);
         })
         .catch(err => console.log(err))
 }
